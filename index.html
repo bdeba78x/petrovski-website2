@@ -62,7 +62,7 @@
         }
         .header-controls {
             position: fixed;
-            top: 16px; /* Поднято на 4px (≈ 0.1 см) */
+            top: 16px;
             left: 0;
             right: 0;
             display: flex;
@@ -77,7 +77,7 @@
         }
         .header-controls.hidden {
             opacity: 0;
-            pointer-events: none; /* Отключаем взаимодействие при скрытии */
+            pointer-events: none;
         }
         .logo, #langToggleBtn, #themeToggleBtn {
             font-size: 18px;
@@ -261,7 +261,7 @@
         }
         @media (max-width: 600px) {
             .header-controls {
-                top: 6px; /* Поднято на 4px для мобильных устройств */
+                top: 6px;
                 flex-direction: row;
                 justify-content: space-between;
                 width: 100%;
@@ -288,7 +288,7 @@
         </div>
         <button id="themeToggleBtn">🌙</button>
     </div>
-    <div id="g_id_onload" data-client_id="833606171828-i81sn025te6dlks0mt7i309q3empnfoi.apps.googleusercontent.com" data-callback="handleCredentialResponse" data-auto_prompt="false"></div>
+    <div id="g_id_onload" data-client_id="833606171828-0pqd858j8a5fq0umm3e41i5r54ucg13a.apps.googleusercontent.com" data-callback="handleCredentialResponse" data-auto_prompt="false"></div>
     <div class="welcome-screen">
         <h1>Welcome!</h1>
         <p>This is Petrovski.AI — an AI image generator. Create unique images, sign in with Google, and start creating!</p>
@@ -312,6 +312,7 @@
         const langToggleBtn = document.getElementById('langToggleBtn');
         let currentLang = localStorage.getItem('language') || 'en';
         const headerControls = document.querySelector('.header-controls');
+        let lastScroll = 0;
 
         const translations = {
             ru: {
@@ -487,13 +488,12 @@
             }
         });
 
-        // Обработчик прокрутки для скрытия/показа header
         window.addEventListener('scroll', () => {
             const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
             if (currentScroll > 0) {
-                headerControls.classList.add('hidden'); // Скрываем при любой прокрутке вниз
+                headerControls.classList.add('hidden');
             } else {
-                headerControls.classList.remove('hidden'); // Показываем только при полном возврате вверх
+                headerControls.classList.remove('hidden');
             }
         });
     </script>
