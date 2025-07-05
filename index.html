@@ -38,11 +38,11 @@
         return gk_fileData[filename] || "";
         }
         </script><!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Генератор изображений с ИИ</title>
+    <title>AI Image Generator</title>
     <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         body {
@@ -53,7 +53,6 @@
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
-            transition: background 0.3s, color 0.3s;
             background: linear-gradient(135deg, #1e1e2f 0%, #2a2a4a 100%);
             color: #ffffff;
         }
@@ -61,35 +60,54 @@
             background: linear-gradient(135deg, #f0f0f0 0%, #d9e6ff 100%);
             color: #333;
         }
-        .logo {
+        .header-controls {
             position: fixed;
-            top: 20px;
-            left: 20px;
+            top: 16px; /* Поднято на 4px (≈ 0.1 см) */
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            z-index: 5;
+            background: rgba(30, 30, 47, 0.9);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            opacity: 1;
+            transition: opacity 0.3s ease;
+        }
+        .header-controls.hidden {
+            opacity: 0;
+            pointer-events: none; /* Отключаем взаимодействие при скрытии */
+        }
+        .logo, #langToggleBtn, #themeToggleBtn {
             font-size: 18px;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 1px;
-            color: #ffffff;
-            transition: color 0.3s;
-        }
-        .light-theme .logo {
-            color: #333;
-        }
-        #themeToggleBtn {
-            position: fixed;
-            top: 5px;
-            right: 20px;
-            background: transparent;
-            color: inherit;
             padding: 5px 10px;
-            font-size: 12px;
+            color: #ffffff;
+            background: transparent;
             border: none;
             border-radius: 10px;
             cursor: pointer;
-            transition: transform 0.2s;
         }
-        #themeToggleBtn:hover {
-            transform: scale(1.05);
+        .center-lang {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+        }
+        #langToggleBtn {
+            transform: translateX(-40%) translateX(-11.4px);
+        }
+        .light-theme .header-controls {
+            background: rgba(240, 240, 240, 0.9);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .light-theme .logo, .light-theme #langToggleBtn, .light-theme #themeToggleBtn {
+            color: #333;
+        }
+        #themeToggleBtn:hover, #langToggleBtn:hover {
+            /* Без масштабирования */
         }
         .welcome-screen, .container {
             text-align: center;
@@ -97,18 +115,18 @@
             max-width: 900px;
             width: 100%;
             border-radius: 15px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-            transition: background 0.3s, box-shadow 0.3s, color 0.3s;
-            margin-top: 60px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+            margin-top: 80px;
+            z-index: 10;
+            position: relative;
         }
         .dark-theme .welcome-screen, .dark-theme .container {
             background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
             color: #ffffff;
         }
         .light-theme .welcome-screen, .light-theme .container {
             background: rgba(255, 255, 255, 0.8);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
             color: #333;
         }
         .welcome-screen h1, .container h1 {
@@ -142,7 +160,6 @@
             border-radius: 10px;
             border: 1px solid rgba(255, 255, 255, 0.2);
             resize: vertical;
-            transition: background 0.3s, color 0.3s, border 0.3s;
         }
         .dark-theme textarea {
             background: rgba(255, 255, 255, 0.05);
@@ -167,7 +184,6 @@
             border: none;
             border-radius: 10px;
             cursor: pointer;
-            transition: transform 0.2s, background-color 0.2s;
             margin: 10px;
         }
         #generateBtn {
@@ -244,32 +260,46 @@
             color: #666;
         }
         @media (max-width: 600px) {
+            .header-controls {
+                top: 6px; /* Поднято на 4px для мобильных устройств */
+                flex-direction: row;
+                justify-content: space-between;
+                width: 100%;
+                padding: 0 10px;
+            }
+            .logo, #langToggleBtn, #themeToggleBtn {
+                font-size: 14px;
+                padding: 5px 8px;
+            }
             .welcome-screen, .container { padding: 20px; }
             textarea { height: 100px; font-size: 14px; }
             button { padding: 10px 20px; font-size: 14px; }
             h1 { font-size: 24px; }
             p { font-size: 14px; }
-            .logo { font-size: 14px; top: 10px; left: 10px; }
-            #themeToggleBtn { top: 5px; right: 10px; font-size: 10px; }
             .attribution { font-size: 10px; }
         }
     </style>
 </head>
 <body class="dark-theme">
-    <div class="logo">petrovski.AI</div>
-    <button id="themeToggleBtn">🌙</button>
-    <div id="g_id_onload" data-client_id="833606171828-0pqd858j8a5fq0umm3e41i5r54ucg13a.apps.googleusercontent.com" data-callback="handleCredentialResponse" data-auto_prompt="false"></div>
+    <div class="header-controls">
+        <div class="logo">Petrovski.AI</div>
+        <div class="center-lang">
+            <button id="langToggleBtn">EN</button>
+        </div>
+        <button id="themeToggleBtn">🌙</button>
+    </div>
+    <div id="g_id_onload" data-client_id="833606171828-i81sn025te6dlks0mt7i309q3empnfoi.apps.googleusercontent.com" data-callback="handleCredentialResponse" data-auto_prompt="false"></div>
     <div class="welcome-screen">
-        <h1>Добро пожаловать!</h1>
-        <p>Это сайт Petrovski.AI — генератор изображений с помощью ИИ. Создавайте уникальные картинки, авторизуйтесь через Google и начните творить!</p>
+        <h1>Welcome!</h1>
+        <p>This is Petrovski.AI — an AI image generator. Create unique images, sign in with Google, and start creating!</p>
         <div class="g_id_signin" data-type="standard" data-size="large" data-theme="outline" data-text="sign_in_with" data-shape="rectangular"></div>
     </div>
     <div class="container">
-        <h1>Генератор изображений с ИИ</h1>
-        <p>Введите описание изображения на английском для лучшего качества (например, "futuristic city in neon lights"):</p>
-        <textarea id="prompt" placeholder="Опишите изображение..."></textarea>
-        <button id="generateBtn" disabled>Сгенерировать</button>
-        <button id="downloadBtn">Скачать изображение</button>
+        <h1>AI Image Generator</h1>
+        <p>Enter a description in English for best quality (e.g., "futuristic city in neon lights"):</p>
+        <textarea id="prompt" placeholder="Describe the image..."></textarea>
+        <button id="generateBtn" disabled>Generate</button>
+        <button id="downloadBtn">Download Image</button>
         <div id="result"></div>
         <div id="error"></div>
         <div class="attribution">Powered by Stability AI</div>
@@ -277,29 +307,105 @@
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script>
         const themeToggleBtn = document.getElementById('themeToggleBtn');
-        const welcomeScreen = document.querySelector('.welcome-screen');
-        const container = document.querySelector('.container');
-        let isAuthenticated = false;
+        const body = document.body;
+        let isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+        const langToggleBtn = document.getElementById('langToggleBtn');
+        let currentLang = localStorage.getItem('language') || 'en';
+        const headerControls = document.querySelector('.header-controls');
+
+        const translations = {
+            ru: {
+                welcomeHeader: 'Добро пожаловать!',
+                welcomeText: 'Это сайт Petrovski.AI — генератор изображений с помощью ИИ. Создавайте уникальные картинки, авторизуйтесь через Google и начните творить!',
+                generatorHeader: 'Генератор изображений с ИИ',
+                generatorText: 'Введите описание изображения на английском для лучшего качества (например, "futuristic city in neon lights"):',
+                placeholder: 'Опишите изображение...',
+                generateBtn: 'Сгенерировать',
+                downloadBtn: 'Скачать изображение',
+                errorAuth: 'Пожалуйста, войдите через Google для генерации изображений.',
+                errorPrompt: 'Пожалуйста, введите описание изображения.',
+                errorLang: 'Для лучшего качества используйте английский язык. Например, вместо "кот в космосе" напишите "cat in space".',
+                errorApi: 'Произошла ошибка: ',
+                poweredBy: 'Powered by Stability AI'
+            },
+            ua: {
+                welcomeHeader: 'Ласкаво просимо!',
+                welcomeText: 'Це сайт Petrovski.AI — генератор зображень за допомогою ШІ. Створюйте унікальні картинки, авторизуйтесь через Google і починайте творити!',
+                generatorHeader: 'Генератор зображень з ШІ',
+                generatorText: 'Введіть опис зображення англійською для кращої якості (наприклад, "futuristic city in neon lights"):',
+                placeholder: 'Опишіть зображення...',
+                generateBtn: 'Згенерувати',
+                downloadBtn: 'Завантажити зображення',
+                errorAuth: 'Будь ласка, увійдіть через Google для генерації зображень.',
+                errorPrompt: 'Будь ласка, введіть опис зображення.',
+                errorLang: 'Для кращої якості використовуйте англійську мову. Например, замість "кіт у космосі" напишіть "cat in space".',
+                errorApi: 'Виникла помилка: ',
+                poweredBy: 'Працює на Stability AI'
+            },
+            en: {
+                welcomeHeader: 'Welcome!',
+                welcomeText: 'This is Petrovski.AI — an AI image generator. Create unique images, sign in with Google, and start creating!',
+                generatorHeader: 'AI Image Generator',
+                generatorText: 'Enter a description in English for best quality (e.g., "futuristic city in neon lights"):',
+                placeholder: 'Describe the image...',
+                generateBtn: 'Generate',
+                downloadBtn: 'Download Image',
+                errorAuth: 'Please sign in with Google to generate images.',
+                errorPrompt: 'Please enter an image description.',
+                errorLang: 'For best quality, use English. For example, instead of "cat in space" write "cat in space".',
+                errorApi: 'An error occurred: ',
+                poweredBy: 'Powered by Stability AI'
+            }
+        };
+
+        function updateLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('language', lang);
+            document.querySelector('.welcome-screen h1').textContent = translations[lang].welcomeHeader;
+            document.querySelector('.welcome-screen p').textContent = translations[lang].welcomeText;
+            document.querySelector('.container h1').textContent = translations[lang].generatorHeader;
+            document.querySelector('.container p').textContent = translations[lang].generatorText;
+            document.getElementById('prompt').placeholder = translations[lang].placeholder;
+            document.getElementById('generateBtn').textContent = translations[lang].generateBtn;
+            document.getElementById('downloadBtn').textContent = translations[lang].downloadBtn;
+            document.querySelector('.attribution').textContent = translations[lang].poweredBy;
+        }
 
         function handleCredentialResponse(response) {
             console.log('Credential Response:', response);
             const idToken = response.credential;
             if (idToken) {
                 isAuthenticated = true;
-                welcomeScreen.style.display = 'none';
-                container.style.display = 'block';
+                localStorage.setItem('isAuthenticated', 'true');
+                document.querySelector('.welcome-screen').style.display = 'none';
+                document.querySelector('.container').style.display = 'block';
                 console.log('Logged in, isAuthenticated set to:', isAuthenticated);
-                document.getElementById('generateBtn').disabled = false; // Разблокировка кнопки после авторизации
+                document.getElementById('generateBtn').disabled = false;
             } else {
                 console.error('No credential received');
             }
         }
 
         themeToggleBtn.addEventListener('click', () => {
-            document.body.classList.toggle('dark-theme');
-            document.body.classList.toggle('light-theme');
-            themeToggleBtn.textContent = document.body.classList.contains('dark-theme') ? '🌙' : '☀️';
+            const isDark = body.classList.contains('dark-theme');
+            body.classList.remove('dark-theme', 'light-theme');
+            body.classList.add(isDark ? 'light-theme' : 'dark-theme');
+            themeToggleBtn.textContent = isDark ? '☀️' : '🌙';
         });
+
+        langToggleBtn.addEventListener('click', () => {
+            currentLang = currentLang === 'en' ? 'ru' : currentLang === 'ru' ? 'ua' : 'en';
+            langToggleBtn.textContent = currentLang.toUpperCase();
+            updateLanguage(currentLang);
+        });
+
+        updateLanguage('en');
+
+        if (isAuthenticated) {
+            document.querySelector('.welcome-screen').style.display = 'none';
+            document.querySelector('.container').style.display = 'block';
+            document.getElementById('generateBtn').disabled = false;
+        }
 
         const generateBtn = document.getElementById('generateBtn');
         const downloadBtn = document.getElementById('downloadBtn');
@@ -319,17 +425,17 @@
         generateBtn.addEventListener('click', async () => {
             console.log('Generate button clicked, isAuthenticated:', isAuthenticated);
             if (!isAuthenticated) {
-                errorDiv.textContent = 'Пожалуйста, войдите через Google для генерации изображений.';
+                errorDiv.textContent = translations[currentLang].errorAuth;
                 return;
             }
             let prompt = promptInput.value.trim();
             if (!prompt) {
-                errorDiv.textContent = 'Пожалуйста, введите описание изображения.';
+                errorDiv.textContent = translations[currentLang].errorPrompt;
                 return;
             }
             prompt = sanitizeInput(prompt);
             if (isRussian(prompt)) {
-                errorDiv.textContent = 'Для лучшего качества используйте английский язык. Например, вместо "кот в космосе" напишите "cat in space".';
+                errorDiv.textContent = translations[currentLang].errorLang;
                 return;
             }
             resultDiv.innerHTML = '';
@@ -357,14 +463,14 @@
                 });
                 if (!response.ok) {
                     const errorData = await response.json();
-                    throw new Error(`Ошибка API: ${response.status} - ${errorData.message || response.statusText}`);
+                    throw new Error(`${translations[currentLang].errorApi}${response.status} - ${errorData.message || response.statusText}`);
                 }
                 const data = await response.json();
                 currentImageBase64 = data.artifacts[0].base64;
                 resultDiv.innerHTML = `<img src="data:image/png;base64,${currentImageBase64}" alt="Сгенерированное изображение">`;
                 downloadBtn.style.display = 'inline-block';
             } catch (error) {
-                errorDiv.textContent = `Произошла ошибка: ${error.message}. Проверьте API-ключ или подключение.`;
+                errorDiv.textContent = `${translations[currentLang].errorApi}${error.message}. Проверьте API-ключ или подключение.`;
                 console.error('Подробности ошибки:', error);
             } finally {
                 generateBtn.disabled = false;
@@ -378,6 +484,16 @@
                 link.href = `data:image/png;base64,${currentImageBase64}`;
                 link.download = 'generated_image.png';
                 link.click();
+            }
+        });
+
+        // Обработчик прокрутки для скрытия/показа header
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+            if (currentScroll > 0) {
+                headerControls.classList.add('hidden'); // Скрываем при любой прокрутке вниз
+            } else {
+                headerControls.classList.remove('hidden'); // Показываем только при полном возврате вверх
             }
         });
     </script>
